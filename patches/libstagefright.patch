@@ -1,0 +1,55 @@
+From 068fc386dc267abdf936a453facbcda9adafdf57 Mon Sep 17 00:00:00 2001
+From: bonuzzz <bonuzzz@gmail.com>
+Date: Wed, 9 May 2018 10:00:03 +0000
+Subject: [PATCH] add support for YUV420SP_NV21 color format
+
+Change-Id: Ia373f5ab7d53eb84ca53fb791a61913cf6386fdc
+---
+ camera/CameraParameters.cpp              | 1 +
+ camera/include/camera/CameraParameters.h | 1 +
+ media/libstagefright/CameraSource.cpp    | 5 +++++
+ 3 files changed, 7 insertions(+)
+
+diff --git a/frameworks/av/camera/CameraParameters.cpp b/frameworks/av/camera/CameraParameters.cpp
+index de8ac2ffc..b6878f33f 100644
+--- a/frameworks/av/camera/CameraParameters.cpp
++++ b/frameworks/av/camera/CameraParameters.cpp
+@@ -154,6 +154,7 @@ const char CameraParameters::PIXEL_FORMAT_YUV422SP[] = "yuv422sp";
+ const char CameraParameters::PIXEL_FORMAT_YUV420SP[] = "yuv420sp";
+ const char CameraParameters::PIXEL_FORMAT_YUV422I[] = "yuv422i-yuyv";
+ const char CameraParameters::PIXEL_FORMAT_YUV420P[]  = "yuv420p";
++const char CameraParameters::PIXEL_FORMAT_YUV420SP_NV21[] = "nv21";
+ const char CameraParameters::PIXEL_FORMAT_RGB565[] = "rgb565";
+ const char CameraParameters::PIXEL_FORMAT_RGBA8888[] = "rgba8888";
+ const char CameraParameters::PIXEL_FORMAT_JPEG[] = "jpeg";
+diff --git a/frameworks/av/camera/include/camera/CameraParameters.h b/frameworks/av/camera/include/camera/CameraParameters.h
+index ba33ffe63..c770d5dec 100644
+--- a/frameworks/av/camera/include/camera/CameraParameters.h
++++ b/frameworks/av/camera/include/camera/CameraParameters.h
+@@ -615,6 +615,7 @@ public:
+     // and KEY_VIDEO_FRAME_FORMAT
+     static const char PIXEL_FORMAT_YUV422SP[];
+     static const char PIXEL_FORMAT_YUV420SP[]; // NV21
++    static const char PIXEL_FORMAT_YUV420SP_NV21[]; // SEC_NV21
+     static const char PIXEL_FORMAT_YUV422I[]; // YUY2
+     static const char PIXEL_FORMAT_YUV420P[]; // YV12
+     static const char PIXEL_FORMAT_RGB565[];
+diff --git a/frameworks/av/media/libstagefright/CameraSource.cpp b/frameworks/av/media/libstagefright/CameraSource.cpp
+index 36a2d3fed..ed85efb77 100644
+--- a/frameworks/av/media/libstagefright/CameraSource.cpp
++++ b/frameworks/av/media/libstagefright/CameraSource.cpp
+@@ -146,6 +146,11 @@ static int32_t getColorFormat(const char* colorFormat) {
+         return OMX_COLOR_FormatYUV420SemiPlanar;
+     }
+ 
++    if (!strcmp(colorFormat, CameraParameters::PIXEL_FORMAT_YUV420SP_NV21)) {
++        static const int OMX_SEC_COLOR_FormatNV21Linear = 0x7F000011;
++        return OMX_SEC_COLOR_FormatNV21Linear;
++    }
++	
+     if (!strcmp(colorFormat, CameraParameters::PIXEL_FORMAT_YUV422I)) {
+         return OMX_COLOR_FormatYCbYCr;
+     }
+-- 
+2.17.0
+
